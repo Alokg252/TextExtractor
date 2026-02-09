@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Text-Extractor</string>
+    <string name="tile_label">Text Extract</string>
 </resources>

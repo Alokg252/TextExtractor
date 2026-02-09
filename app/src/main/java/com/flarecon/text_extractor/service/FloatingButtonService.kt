@@ -64,6 +64,9 @@ class FloatingButtonService : Service() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         createFloatingButton()
+        
+        // Notify tile that service is active
+        TextExtractorTileService.updateTileState(true)
     }
 
     private fun createNotificationChannel() {
@@ -205,6 +208,10 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        
+        // Notify tile that service is inactive
+        TextExtractorTileService.updateTileState(false)
+        
         try {
             windowManager.removeView(floatingButton)
             regionOverlay?.dismiss()
