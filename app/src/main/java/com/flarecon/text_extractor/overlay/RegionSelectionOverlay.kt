@@ -165,6 +165,18 @@ class RegionSelectionOverlay(
     }
 
     private fun captureRegion() {
+        // Get the view's location on screen to convert view coordinates to screen coordinates
+        val locationOnScreen = IntArray(2)
+        getLocationOnScreen(locationOnScreen)
+        
+        // Create adjusted rectangle with absolute screen coordinates
+        val screenRect = RectF(
+            selectionRect.left + locationOnScreen[0],
+            selectionRect.top + locationOnScreen[1],
+            selectionRect.right + locationOnScreen[0],
+            selectionRect.bottom + locationOnScreen[1]
+        )
+        
         // Hide overlay before capture
         visibility = INVISIBLE
         
@@ -178,7 +190,7 @@ class RegionSelectionOverlay(
                     context,
                     resultCode,
                     mediaProjectionIntent,
-                    selectionRect
+                    screenRect  // Use screen-adjusted coordinates
                 ) { bitmap ->
                     onRegionSelected(bitmap)
                 }
