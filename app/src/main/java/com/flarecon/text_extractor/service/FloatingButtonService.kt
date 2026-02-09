@@ -18,10 +18,12 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import androidx.core.app.NotificationCompat
 import com.flarecon.text_extractor.MainActivity
 import com.flarecon.text_extractor.R
 import com.flarecon.text_extractor.overlay.RegionSelectionOverlay
+import com.flarecon.text_extractor.settings.FloatingButtonPreferences
 
 class FloatingButtonService : Service() {
 
@@ -102,13 +104,31 @@ class FloatingButtonService : Service() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun createFloatingButton() {
+        // Load customization preferences
+        val buttonText = FloatingButtonPreferences.getText(this)
+        val textColor = FloatingButtonPreferences.getTextColor(this)
+        val bgColor = FloatingButtonPreferences.getBackgroundColor(this)
+        val borderColor = FloatingButtonPreferences.getBorderColor(this)
+        val borderWidth = FloatingButtonPreferences.getBorderWidth(this)
+        val opacity = FloatingButtonPreferences.getOpacity(this)
+        val buttonSize = FloatingButtonPreferences.getSize(this)
+        val textSize = FloatingButtonPreferences.getTextSize(this)
+        
+        // Create dynamic background drawable
+        val backgroundDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(bgColor)
+            setStroke(dpToPx(borderWidth.toInt()), borderColor)
+        }
+        
         floatingButton = TextView(this).apply {
-            text = "Tx"
-            setTextColor(Color.parseColor("#00bfff"))
-            textSize = 16f
+            text = buttonText
+            setTextColor(textColor)
+            this.textSize = textSize
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setBackgroundResource(R.drawable.floating_button_bg)
+            background = backgroundDrawable
+            alpha = opacity
             elevation = 8f
         }
 
@@ -116,8 +136,8 @@ class FloatingButtonService : Service() {
         val savedY = prefs.getInt(KEY_Y, 200)
 
         val params = WindowManager.LayoutParams(
-            dpToPx(40),
-            dpToPx(40),
+            dpToPx(buttonSize),
+            dpToPx(buttonSize),
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT

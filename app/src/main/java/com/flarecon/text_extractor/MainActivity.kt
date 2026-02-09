@@ -13,8 +13,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flarecon.text_extractor.service.FloatingButtonService
+import com.flarecon.text_extractor.settings.CustomizationScreen
 import com.flarecon.text_extractor.ui.theme.TextExtractorTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +37,7 @@ class MainActivity : ComponentActivity() {
     private var isServiceRunning by mutableStateOf(false)
     private var hasOverlayPermission by mutableStateOf(false)
     private var hasNotificationPermission by mutableStateOf(false)
+    private var showCustomization by mutableStateOf(false)
     
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -60,7 +64,20 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             TextExtractorTheme {
-                MainScreen()
+                if (showCustomization) {
+                    CustomizationScreen(
+                        onBack = { showCustomization = false },
+                        onSettingsChanged = {
+                            // If service is running, restart it to apply new settings
+                            if (isServiceRunning) {
+                                FloatingButtonService.stopService(this@MainActivity)
+                                FloatingButtonService.startService(this@MainActivity)
+                            }
+                        }
+                    )
+                } else {
+                    MainScreen()
+                }
             }
         }
     }
@@ -139,10 +156,11 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 
                 // App Icon
                 Box(
@@ -178,7 +196,7 @@ class MainActivity : ComponentActivity() {
                     textAlign = TextAlign.Center
                 )
                 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 
                 // Permissions Card
                 Card(
@@ -223,7 +241,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Instructions
                 Card(
@@ -254,7 +272,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Main Action Button
                 Button(
@@ -277,6 +295,26 @@ class MainActivity : ComponentActivity() {
                         text = if (isServiceRunning) "Stop Floating Button" else "Start Floating Button",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Customize Button
+                OutlinedButton(
+                    onClick = { showCustomization = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = primaryColor
+                    )
+                ) {
+                    Text(
+                        text = "Customize Floating Button",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
                 
