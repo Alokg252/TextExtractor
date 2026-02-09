@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
     
     @Composable
     fun MainScreen() {
-        val primaryColor = Color(0xFF6200EE)
+        val primaryColor = Color(0xFF00BFFF)
         val surfaceColor = MaterialTheme.colorScheme.surface
         
         Scaffold(
@@ -149,18 +149,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(primaryColor, Color(0xFF9C27B0))
-                            )
-                        ),
+                        .background(Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "T",
-                        fontSize = 48.sp,
+                        text = "Tx",
+                        fontSize = 36.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = primaryColor
                     )
                 }
                 
