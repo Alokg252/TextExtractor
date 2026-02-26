@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flarecon.text_extractor.service.FloatingButtonService
 import com.flarecon.text_extractor.settings.CustomizationScreen
+import com.flarecon.text_extractor.qr.QRCodeScreen
 import com.flarecon.text_extractor.ui.theme.TextExtractorTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
     private var hasOverlayPermission by mutableStateOf(false)
     private var hasNotificationPermission by mutableStateOf(false)
     private var showCustomization by mutableStateOf(false)
+    private var showQRCodeScreen by mutableStateOf(false)
     
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -64,19 +66,25 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             TextExtractorTheme {
-                if (showCustomization) {
-                    CustomizationScreen(
-                        onBack = { showCustomization = false },
-                        onSettingsChanged = {
-                            // If service is running, restart it to apply new settings
-                            if (isServiceRunning) {
-                                FloatingButtonService.stopService(this@MainActivity)
-                                FloatingButtonService.startService(this@MainActivity)
+                when {
+                    showQRCodeScreen -> {
+                        QRCodeScreen(onBack = { showQRCodeScreen = false })
+                    }
+                    showCustomization -> {
+                        CustomizationScreen(
+                            onBack = { showCustomization = false },
+                            onSettingsChanged = {
+                                // If service is running, restart it to apply new settings
+                                if (isServiceRunning) {
+                                    FloatingButtonService.stopService(this@MainActivity)
+                                    FloatingButtonService.startService(this@MainActivity)
+                                }
                             }
-                        }
-                    )
-                } else {
-                    MainScreen()
+                        )
+                    }
+                    else -> {
+                        MainScreen()
+                    }
                 }
             }
         }
@@ -313,6 +321,26 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(
                         text = "Customize Floating Button",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // QR Code Tools Button
+                OutlinedButton(
+                    onClick = { showQRCodeScreen = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = primaryColor
+                    )
+                ) {
+                    Text(
+                        text = "QR Code Tools",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium
                     )

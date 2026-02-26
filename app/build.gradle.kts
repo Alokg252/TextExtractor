@@ -55,6 +55,16 @@ dependencies {
     // ML Kit for text recognition
     implementation(libs.mlkit.text.recognition)
     
+    // ML Kit Barcode Scanning and QR Code generation
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.zxing.core)
+    
+    // CameraX for QR scanner
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
